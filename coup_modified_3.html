@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coup Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #c9a84c; --gold-light: #f0d080; --gold-dark: #8a6a20;
+  --bg-deep: #0a0608; --bg-card: #14090f; --bg-panel: #1a0f16; --bg-surface: #241520;
+  --text-cream: #f5e8d0; --text-muted: #9a7a6a;
+  --red: #cc3333; --green: #44cc77; --blue: #4488cc;
+  --border: rgba(201,168,76,0.25);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Tajawal',sans-serif; background:var(--bg-deep); color:var(--text-cream);
+  min-height:100vh; overflow-x:hidden;
+}
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(139,26,26,0.07) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 85%, rgba(201,168,76,0.05) 0%, transparent 50%);
+}
+.screen { display:none; min-height:100vh; position:relative; z-index:1; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* ── PARTICLES ── */
+.particles-container {
+  position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+}
+.particle {
+  position:absolute; width:2px; height:2px; background:var(--gold);
+  border-radius:50%; animation:floatParticle linear infinite;
+  opacity:0;
+}
+@keyframes floatParticle {
+  0%   { transform:translateY(100vh) translateX(0) scale(0); opacity:0; }
+  10%  { opacity:0.6; }
+  90%  { opacity:0.3; }
+  100% { transform:translateY(-10vh) translateX(calc(var(--drift,0)*80px)) scale(1.5); opacity:0; }
+}
+
+/* ── MAIN MENU ── */
+#main-menu { align-items:center; justify-content:center; text-align:center; padding:2rem; gap:2rem; }
+.game-title {
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(3.5rem,12vw,7rem); font-weight:900; line-height:1;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold-light),var(--gold-dark));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  animation:shimmer 3s linear infinite; background-size:200%;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30px rgba(201,168,76,0.3));
+}
+@keyframes shimmer { 0%{background-position:0%} 100%{background-position:200%} }
+.game-subtitle { color:var(--text-muted); font-size:1.1rem; letter-spacing:0.3em; font-style:italic; margin-top:0.5rem; }
+.divider { width:200px; height:2px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:1rem auto; }
+
+.menu-box {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--border); border-radius:18px; padding:2rem;
+  width:100%; max-width:480px;
+  box-shadow:0 0 40px rgba(201,168,76,0.1), 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.menu-btns { display:flex; flex-direction:column; gap:0.75rem; }
+
+/* ── CREDITS SECTION ── */
+.credits-bar {
+  position:fixed; bottom:0; left:0; right:0;
+  background:linear-gradient(90deg, transparent, rgba(10,6,8,0.95), transparent);
+  border-top:1px solid rgba(201,168,76,0.15);
+  padding:0.5rem 2rem;
+  display:flex; align-items:center; justify-content:center; gap:1rem;
+  z-index:10;
+}
+.credits-label {
+  font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.25em;
+}
+.credits-names {
+  display:flex; gap:0.75rem; align-items:center;
+}
+.credit-name {
+  font-family:'Cinzel Decorative',serif; font-size:0.7rem;
+  color:var(--gold); letter-spacing:0.1em;
+  background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.2);
+  border-radius:20px; padding:2px 10px;
+  transition:all 0.3s;
+  animation:creditGlow 3s ease-in-out infinite alternate;
+}
+.credit-name:nth-child(2) { animation-delay:1.5s; }
+@keyframes creditGlow {
+  from { box-shadow:0 0 5px rgba(201,168,76,0.1); border-color:rgba(201,168,76,0.2); }
+  to   { box-shadow:0 0 12px rgba(201,168,76,0.35); border-color:rgba(201,168,76,0.5); color:var(--gold-light); }
+}
+
+/* ── ABOUT ── */
+.about-section {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:14px;
+  padding:1.5rem; width:100%; max-width:600px; text-align:right;
+}
+.about-title { font-family:'Cinzel Decorative',serif; font-size:1.1rem; color:var(--gold); margin-bottom:1rem; }
+.about-text { font-size:0.88rem; line-height:1.8; color:var(--text-muted); margin-bottom:0.75rem; }
+.about-text strong { color:var(--text-cream); }
+.about-list { margin:0.5rem 0 0.5rem 1.5rem; }
+.about-list li { margin-bottom:0.4rem; }
+.social-link {
+  display:inline-flex; align-items:center; gap:0.5rem;
+  color:var(--gold); text-decoration:none; font-size:0.9rem;
+  transition:all 0.2s; margin-top:0.75rem;
+}
+.social-link:hover { color:var(--gold-light); transform:translateX(-3px); }
+
+/* ── SETTINGS ── */
+#settings-screen { align-items:center; justify-content:center; padding:2rem; gap:1rem; }
+.settings-box {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--border); border-radius:18px; padding:2rem;
+  width:100%; max-width:440px;
+}
+.settings-title { font-family:'Cinzel Decorative',serif; font-size:1.1rem; color:var(--gold); margin-bottom:1.5rem; text-align:center; }
+.setting-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
+.setting-label { font-size:0.9rem; color:var(--text-cream); }
+.volume-slider { flex:1; margin:0 1rem; height:4px; background:var(--bg-surface); border-radius:2px; appearance:none; }
+.volume-slider::-webkit-slider-thumb { appearance:none; width:16px; height:16px; background:var(--gold); border-radius:50%; cursor:pointer; }
+.volume-value { font-size:0.85rem; color:var(--gold); min-width:35px; text-align:left; }
+
+/* ── LOBBY ── */
+#lobby { align-items:center; justify-content:center; text-align:center; padding:2rem; gap:1.5rem; }
+.lobby-box {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--border); border-radius:18px; padding:2rem;
+  width:100%; max-width:440px;
+  box-shadow:0 0 40px rgba(201,168,76,0.1), 0 20px 60px rgba(0,0,0,0.5);
+}
+.box-title { font-family:'Cinzel Decorative',serif; font-size:0.95rem; color:var(--gold); margin-bottom:1.25rem; letter-spacing:0.1em; }
+
+.input-group { display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1.25rem; }
+.field-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:0.2rem; }
+input[type=text] {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:10px;
+  padding:0.75rem 1rem; color:var(--text-cream); font-family:'Tajawal',sans-serif; font-size:1rem;
+  outline:none; width:100%; transition:border-color 0.2s, box-shadow 0.2s; text-align:right;
+}
+input[type=text]:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,168,76,0.12); }
+input[type=text]::placeholder { color:var(--text-muted); }
+
+.btn-primary {
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-dark));
+  background-size:200%; border:none; border-radius:12px; padding:0.9rem 2rem;
+  color:var(--bg-deep); font-family:'Cinzel Decorative',serif; font-size:0.85rem; font-weight:700;
+  cursor:pointer; transition:all 0.3s; letter-spacing:0.05em; width:100%;
+}
+.btn-primary:hover { background-position:right; transform:translateY(-2px); box-shadow:0 8px 25px rgba(201,168,76,0.4); }
+.btn-primary:active { transform:translateY(0); }
+.btn-primary:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
+
+.btn-secondary {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:10px;
+  padding:0.75rem 1.5rem; color:var(--text-cream); font-family:'Tajawal',sans-serif; font-size:0.9rem;
+  cursor:pointer; transition:all 0.2s; width:100%;
+}
+.btn-secondary:hover { border-color:var(--gold); color:var(--gold); }
+
+.or-divider { display:flex; align-items:center; gap:0.75rem; color:var(--text-muted); font-size:0.8rem; margin:0.5rem 0; }
+.or-divider::before, .or-divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── WAITING ROOM ── */
+#waiting { align-items:center; justify-content:center; text-align:center; padding:2rem; gap:1.5rem; }
+.room-code-display {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:2px solid var(--gold); border-radius:18px; padding:2rem;
+  width:100%; max-width:440px;
+  box-shadow:0 0 40px rgba(201,168,76,0.15);
+}
+.code-label { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.3em; margin-bottom:0.5rem; }
+.code-value {
+  font-family:'Cinzel Decorative',serif; font-size:3rem; letter-spacing:0.3em;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:0.5rem;
+}
+.code-hint { font-size:0.82rem; color:var(--text-muted); }
+
+.players-waiting { width:100%; max-width:440px; }
+.waiting-title { font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:0.75rem; text-align:right; }
+.waiting-list { display:flex; flex-direction:column; gap:0.5rem; }
+.waiting-player {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:10px;
+  padding:0.75rem 1rem; display:flex; align-items:center; gap:0.75rem;
+  animation:slideIn 0.3s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateX(-15px)} to{opacity:1;transform:translateX(0)} }
+.waiting-dot { width:8px; height:8px; background:var(--green); border-radius:50%; box-shadow:0 0 6px var(--green); }
+.waiting-name { flex:1; font-size:0.95rem; }
+.waiting-host { font-size:0.7rem; color:var(--gold); background:rgba(201,168,76,0.12); padding:2px 8px; border-radius:10px; }
+
+.pulse { animation:pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── GAME SCREEN ── */
+#game { padding:0.75rem; gap:0.75rem; }
+
+/* ── SPECTATOR OVERLAY ── */
+.spectator-banner {
+  position:sticky; top:0; z-index:50;
+  background:linear-gradient(90deg, rgba(139,26,26,0.9), rgba(80,10,10,0.95), rgba(139,26,26,0.9));
+  border:1px solid rgba(204,51,51,0.4); border-radius:10px;
+  padding:0.6rem 1rem;
+  display:flex; align-items:center; justify-content:center; gap:0.75rem;
+  animation:spectatorPulse 2s ease-in-out infinite;
+  box-shadow:0 0 20px rgba(204,51,51,0.2);
+}
+@keyframes spectatorPulse {
+  0%,100% { box-shadow:0 0 20px rgba(204,51,51,0.2); }
+  50%      { box-shadow:0 0 35px rgba(204,51,51,0.4); }
+}
+.spectator-icon { font-size:1.1rem; }
+.spectator-text { font-size:0.85rem; color:#ff8080; font-weight:700; letter-spacing:0.05em; }
+.spectator-sub  { font-size:0.7rem; color:rgba(255,128,128,0.65); }
+
+/* ── ELIMINATION EFFECT ── */
+@keyframes eliminateFlash {
+  0%   { background:rgba(204,51,51,0); }
+  20%  { background:rgba(204,51,51,0.25); }
+  40%  { background:rgba(204,51,51,0.1); }
+  60%  { background:rgba(204,51,51,0.2); }
+  100% { background:rgba(204,51,51,0); }
+}
+.eliminate-flash { animation:eliminateFlash 1.2s ease-out; }
+
+@keyframes cardRevealAnim {
+  0%   { transform:rotateY(0) scale(1); filter:brightness(1); }
+  30%  { transform:rotateY(90deg) scale(1.1); filter:brightness(2); }
+  60%  { transform:rotateY(180deg) scale(1.1); filter:brightness(1.5) saturate(2); }
+  100% { transform:rotateY(360deg) scale(1); filter:brightness(1); }
+}
+.card-reveal-anim { animation:cardRevealAnim 0.7s ease; }
+
+@keyframes coinGain {
+  0%   { transform:translateY(0) scale(1); opacity:1; }
+  50%  { transform:translateY(-30px) scale(1.3); opacity:0.8; }
+  100% { transform:translateY(-60px) scale(0.8); opacity:0; }
+}
+
+/* ── COIN FLOAT EFFECT ── */
+.coin-float {
+  position:fixed; pointer-events:none; z-index:999;
+  font-size:1.5rem; font-weight:900;
+  animation:coinFloat 1.2s ease-out forwards;
+  font-family:'Cinzel Decorative',serif;
+}
+@keyframes coinFloat {
+  0%   { transform:translateY(0) scale(1); opacity:1; }
+  100% { transform:translateY(-80px) scale(0.5); opacity:0; }
+}
+
+/* ── SKULL EFFECT ── */
+.skull-float {
+  position:fixed; pointer-events:none; z-index:999;
+  font-size:3rem;
+  animation:skullFloat 1.5s ease-out forwards;
+}
+@keyframes skullFloat {
+  0%   { transform:translateY(0) scale(0.5) rotate(-20deg); opacity:1; }
+  50%  { transform:translateY(-50px) scale(1.2) rotate(10deg); opacity:0.8; }
+  100% { transform:translateY(-120px) scale(0.3) rotate(45deg); opacity:0; }
+}
+
+.top-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  background:linear-gradient(90deg,var(--bg-panel),var(--bg-card),var(--bg-panel));
+  border:1px solid var(--border); border-radius:12px; padding:0.65rem 1rem;
+}
+.top-title { font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold); }
+.top-info { font-size:0.8rem; color:var(--text-muted); }
+.top-info span { color:var(--gold-light); font-weight:700; }
+.top-timer {
+  font-size:0.75rem; color:var(--gold-light);
+  background:rgba(201,168,76,0.1); padding:4px 10px; border-radius:12px;
+}
+
+/* MY CARDS */
+.my-hand {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:2px solid var(--gold); border-radius:14px; padding:1rem;
+  box-shadow:0 0 20px rgba(201,168,76,0.08);
+}
+.hand-label { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:0.75rem; }
+.hand-cards { display:flex; gap:0.75rem; flex-wrap:wrap; }
+
+.hand-card {
+  width:80px; height:110px; border-radius:10px; border:1.5px solid;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; cursor:default; position:relative; transition:transform 0.2s;
+  flex-shrink:0;
+}
+.hand-card:hover { transform:translateY(-4px); }
+.hand-card .hc-icon { font-size:2rem; }
+.hand-card .hc-name { font-size:0.65rem; font-weight:700; letter-spacing:0.05em; }
+.hand-card.revealed { opacity:0.4; filter:grayscale(1); }
+.hand-card.revealed::after { content:'✕'; position:absolute; top:4px; right:4px; font-size:0.7rem; color:var(--red); }
+
+/* OTHER PLAYERS */
+.others-area { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.6rem; }
+.opp-card {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--border); border-radius:12px; padding:0.9rem;
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.opp-card::before { content:''; position:absolute; top:0;left:0;right:0; height:3px; background:linear-gradient(90deg,var(--gold-dark),var(--gold)); opacity:0; transition:opacity 0.3s; }
+.opp-card.active-turn { border-color:var(--gold); box-shadow:0 0 15px rgba(201,168,76,0.2); }
+.opp-card.active-turn::before { opacity:1; }
+.opp-card.eliminated { opacity:0.35; filter:grayscale(1); }
+
+/* ELIMINATED OVERLAY */
+.opp-card.eliminated::after {
+  content:'خرج من اللعبة'; position:absolute; inset:0;
+  background:rgba(0,0,0,0.55); border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.7rem; font-weight:700; color:rgba(255,80,80,0.8);
+  letter-spacing:0.15em;
+}
+
+.opp-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.6rem; }
+.opp-name { font-weight:700; font-size:0.9rem; }
+.opp-coins { font-size:0.8rem; color:var(--gold); background:rgba(201,168,76,0.1); border-radius:20px; padding:2px 8px; }
+.opp-cards-row { display:flex; gap:0.4rem; }
+.mini-card {
+  width:42px; height:58px; border-radius:6px; border:1px solid; display:flex;
+  flex-direction:column; align-items:center; justify-content:center; font-size:0.5rem; font-weight:700;
+}
+.mini-card.face-down { background:linear-gradient(135deg,#1a0a20,#2a1030); border-color:rgba(201,168,76,0.3); }
+.mini-card.face-down::after { content:'?'; font-family:'Cinzel Decorative',serif; font-size:1.2rem; color:rgba(201,168,76,0.3); }
+.mini-card .mc-icon { font-size:1.1rem; margin-bottom:1px; }
+.dead-badge { position:absolute; top:-1px; right:-1px; background:#8b1a1a; border-radius:0 6px 0 6px; padding:1px 4px; font-size:0.45rem; color:#ffa0a0; font-weight:700; }
+
+/* CHARACTER COLORS */
+.duke      { background:linear-gradient(135deg,#3d1a6b,#5c2a9e); border-color:#7a44bb !important; color:#c9a0f0; }
+.assassin  { background:linear-gradient(135deg,#1a1a1a,#2d1a1a); border-color:#6b1a1a !important; color:#e06060; }
+.ambassador{ background:linear-gradient(135deg,#0a2a1a,#1a4a30); border-color:#2a7a4a !important; color:#80d4a0; }
+.captain   { background:linear-gradient(135deg,#0a1a3d,#1a3060); border-color:#2a50a0 !important; color:#70a0e0; }
+.contessa  { background:linear-gradient(135deg,#3d0a20,#601a35); border-color:#a02850 !important; color:#e080a0; }
+
+/* ACTIONS */
+.actions-panel {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--border); border-radius:14px; padding:1rem;
+}
+.actions-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border); }
+.ah-left .ah-label { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; }
+.ah-left .ah-name  { font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold-light); margin-top:2px; }
+.ah-right .ah-label{ font-size:0.7rem; color:var(--text-muted); text-align:left; }
+.ah-right .ah-coins{ font-family:'Cinzel Decorative',serif; font-size:1rem; color:var(--gold); }
+
+.waiting-turn {
+  text-align:center; padding:1.5rem; color:var(--text-muted); font-size:0.9rem;
+  border:1px dashed var(--border); border-radius:10px;
+}
+.waiting-turn .wt-name { color:var(--gold-light); font-weight:700; }
+
+/* SPECTATOR VIEW */
+.spectator-view {
+  text-align:center; padding:1.5rem; border-radius:10px;
+  border:1px solid rgba(204,51,51,0.25);
+  background:rgba(139,26,26,0.08);
+}
+.spectator-view .sv-icon { font-size:2rem; margin-bottom:0.5rem; }
+.spectator-view .sv-text { font-size:0.88rem; color:#ff8080; font-weight:700; }
+.spectator-view .sv-sub  { font-size:0.75rem; color:var(--text-muted); margin-top:0.3rem; }
+
+.actions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.55rem; }
+.action-btn {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:10px;
+  padding:0.7rem; cursor:pointer; transition:all 0.25s; text-align:right;
+  font-family:'Tajawal',sans-serif; color:var(--text-cream); position:relative;
+}
+.action-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.3); }
+.action-btn:disabled { opacity:0.3; cursor:not-allowed; }
+.action-btn.income:hover:not(:disabled)      { border-color:var(--green); color:var(--green); }
+.action-btn.foreign-aid:hover:not(:disabled) { border-color:#70a0e0; color:#70a0e0; }
+.action-btn.coup-action:hover:not(:disabled) { border-color:var(--red); color:var(--red); }
+.action-btn.coup-action.required             { border-color:var(--red); animation:pulseRed 1s infinite; }
+.action-btn.duke-action:hover:not(:disabled)       { border-color:#7a44bb; color:#c9a0f0; }
+.action-btn.assassin-action:hover:not(:disabled)   { border-color:#e06060; color:#e06060; }
+.action-btn.captain-action:hover:not(:disabled)    { border-color:#70a0e0; color:#70a0e0; }
+.action-btn.ambassador-action:hover:not(:disabled) { border-color:#80d4a0; color:#80d4a0; }
+@keyframes pulseRed { 0%,100%{box-shadow:0 0 0 0 rgba(204,51,51,0.3)} 50%{box-shadow:0 0 0 6px rgba(204,51,51,0)} }
+.ab-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.25rem; }
+.ab-name { font-size:0.9rem; font-weight:700; }
+.ab-icon { font-size:1.25rem; }
+.ab-cost { display:inline-flex; align-items:center; font-size:0.68rem; background:rgba(201,168,76,0.12); border-radius:10px; padding:1px 6px; color:var(--gold); margin-bottom:0.2rem; }
+.ab-cost.gain { color:var(--green); background:rgba(68,204,119,0.1); }
+.ab-desc { font-size:0.7rem; color:var(--text-muted); line-height:1.4; }
+
+.target-area { margin-top:0.6rem; }
+.target-box { background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; padding:0.75rem; }
+.target-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.15em; margin-bottom:0.5rem; }
+.target-btns { display:flex; flex-wrap:wrap; gap:0.4rem; }
+.target-btn {
+  background:var(--bg-panel); border:1px solid var(--border); border-radius:8px;
+  padding:0.4rem 0.9rem; font-family:'Tajawal',sans-serif; font-size:0.85rem;
+  color:var(--text-cream); cursor:pointer; transition:all 0.2s;
+}
+.target-btn:hover { border-color:var(--red); color:var(--red); }
+
+/* LOG */
+.log-panel { background:linear-gradient(135deg,var(--bg-panel),var(--bg-card)); border:1px solid var(--border); border-radius:12px; padding:0.9rem; max-height:180px; overflow-y:auto; }
+.log-title { font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:0.6rem; }
+.log-entry { display:flex; gap:0.4rem; align-items:flex-start; padding:0.3rem 0; border-bottom:1px solid rgba(201,168,76,0.05); font-size:0.8rem; animation:fadeIn 0.3s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+.log-t { color:var(--gold); font-size:0.68rem; min-width:18px; }
+.log-m { color:var(--text-muted); line-height:1.5; }
+.log-m .hl       { color:var(--text-cream); }
+.log-m .coin-c   { color:var(--gold); }
+.log-m .danger-c { color:var(--red); }
+.log-m .ok-c     { color:var(--green); }
+
+/* MODAL */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.88); display:flex;
+  align-items:center; justify-content:center; z-index:100; padding:1rem;
+  backdrop-filter:blur(4px); animation:fadeInModal 0.2s ease;
+}
+@keyframes fadeInModal { from{opacity:0} to{opacity:1} }
+.modal {
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-card));
+  border:1px solid var(--gold); border-radius:18px; padding:1.75rem;
+  width:100%; max-width:420px;
+  box-shadow:0 0 60px rgba(201,168,76,0.2), 0 30px 80px rgba(0,0,0,0.5);
+  animation:slideUp 0.3s ease; max-height:85vh; overflow-y:auto;
+}
+@keyframes slideUp { from{opacity:0;transform:translateY(20px) scale(0.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+.modal-title { font-family:'Cinzel Decorative',serif; font-size:1.05rem; color:var(--gold); margin-bottom:0.4rem; text-align:center; }
+.modal-sub { font-size:0.82rem; color:var(--text-muted); text-align:center; margin-bottom:1.25rem; }
+.modal-btns { display:flex; flex-direction:column; gap:0.55rem; }
+.mbtn {
+  background:var(--bg-surface); border:1px solid var(--border); border-radius:10px;
+  padding:0.7rem 1rem; cursor:pointer; text-align:right; font-family:'Tajawal',sans-serif;
+  color:var(--text-cream); transition:all 0.2s; display:flex; align-items:center; gap:0.6rem;
+}
+.mbtn:hover          { border-color:var(--gold); background:rgba(201,168,76,0.07); }
+.mbtn.danger:hover   { border-color:var(--red);   background:rgba(204,51,51,0.07);  color:var(--red); }
+.mbtn.confirm:hover  { border-color:var(--green);  background:rgba(68,204,119,0.07); color:var(--green); }
+.mbtn .mi { font-size:1.25rem; }
+.mbtn .mt { flex:1; }
+.mbtn .mn { font-weight:700; font-size:0.9rem; }
+.mbtn .md { font-size:0.72rem; color:var(--text-muted); margin-top:1px; }
+
+.timer-bar {
+  height:3px; background:var(--gold); border-radius:2px; margin-top:0.75rem;
+  animation:timerShrink 10s linear;
+}
+@keyframes timerShrink { from{width:100%} to{width:0%} }
+
+/* NOTIF */
+.notif {
+  position:fixed; top:1rem; left:50%; transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--bg-panel),var(--bg-surface));
+  border:1px solid var(--gold); border-radius:10px; padding:0.7rem 1.5rem;
+  font-size:0.85rem; color:var(--gold-light); z-index:200; white-space:nowrap;
+  animation:notifIn 0.3s ease, notifOut 0.3s ease 2.5s forwards;
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+@keyframes notifIn  { from{opacity:0;transform:translateX(-50%) translateY(-15px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+@keyframes notifOut { to{opacity:0;transform:translateX(-50%) translateY(-10px)} }
+
+/* WINNER */
+#winner { align-items:center; justify-content:center; text-align:center; padding:2rem; gap:1.5rem; }
+.winner-scene {
+  position:relative; padding:3rem 2rem;
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.02));
+  border:2px solid var(--gold); border-radius:20px;
+  box-shadow:0 0 60px rgba(201,168,76,0.2);
+  max-width:500px; width:100%;
+}
+.confetti { position:absolute; font-size:1.5rem; animation:confettiFall 3s linear infinite; }
+.confetti:nth-child(1) { left:10%; animation-delay:0s; }
+.confetti:nth-child(2) { left:30%; animation-delay:0.5s; }
+.confetti:nth-child(3) { left:50%; animation-delay:1s; }
+.confetti:nth-child(4) { left:70%; animation-delay:1.5s; }
+.confetti:nth-child(5) { left:90%; animation-delay:2s; }
+@keyframes confettiFall { 0%{top:-20px;opacity:1} 100%{top:100%;opacity:0} }
+
+.winner-crown { font-size:5rem; animation:wBounce 1s ease-in-out infinite alternate; margin-bottom:1rem; }
+@keyframes wBounce { from{transform:translateY(0) rotate(-5deg) scale(1)} to{transform:translateY(-15px) rotate(5deg) scale(1.08)} }
+.winner-label { font-family:'Cinzel Decorative',serif; font-size:0.9rem; color:var(--text-muted); letter-spacing:0.25em; text-transform:uppercase; }
+.winner-name {
+  font-family:'Cinzel Decorative',serif; font-size:2.8rem;
+  background:linear-gradient(135deg,var(--gold-dark),var(--gold-light),var(--gold-dark));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  background-size:200%; animation:shimmer 2s linear infinite; margin:0.5rem 0 1.5rem;
+}
+
+/* REF */
+.ref-panel { background:linear-gradient(135deg,var(--bg-panel),var(--bg-card)); border:1px solid var(--border); border-radius:12px; padding:0.9rem; }
+.ref-label { font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.2em; margin-bottom:0.6rem; }
+.ref-row { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.ref-chip {
+  flex:1; min-width:80px; border-radius:8px; border:1px solid; padding:0.45rem 0.5rem;
+  font-size:0.68rem; cursor:pointer; transition:transform 0.2s;
+}
+.ref-chip:hover { transform:scale(1.04); }
+.ref-chip .rc-icon  { font-size:1rem; margin-bottom:2px; }
+.ref-chip .rc-name  { font-weight:700; }
+.ref-chip .rc-power { opacity:0.7; margin-top:1px; }
+
+::-webkit-scrollbar       { width:5px; }
+::-webkit-scrollbar-track { background:var(--bg-deep); }
+::-webkit-scrollbar-thumb { background:var(--gold-dark); border-radius:3px; }
+
+@media(max-width:600px) {
+  .others-area  { grid-template-columns:1fr 1fr; }
+  .actions-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- FLOATING PARTICLES -->
+<div class="particles-container" id="particles-container"></div>
+
+<!-- ── MAIN MENU ── -->
+<div id="main-menu" class="screen active">
+  <div>
+    <div class="game-title">COUP</div>
+    <div class="game-subtitle">لعبة الخداع الاستراتيجي</div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="menu-box">
+    <div class="menu-btns">
+      <button class="btn-primary" onclick="showScreen('lobby')">🎮 ابدأ اللعب</button>
+      <button class="btn-secondary" onclick="showScreen('about')">📖 عن اللعبة</button>
+      <button class="btn-secondary" onclick="showScreen('settings-screen')">⚙️ الإعدادات</button>
+    </div>
+  </div>
+
+  <!-- CREDITS — في القائمة الرئيسية فقط -->
+  <div class="credits-bar" style="position:relative;bottom:auto;left:auto;right:auto;background:transparent;border-top:none;margin-top:auto;padding-top:1rem">
+    <div class="credits-label">المنفذون</div>
+    <div class="credits-names">
+      <div class="credit-name">Abu Essam</div>
+      <div class="credit-name">Turki</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ABOUT ── -->
+<div id="about" class="screen">
+  <div style="align-items:center;justify-content:center;padding:2rem;gap:1.5rem;display:flex;flex-direction:column;width:100%">
+    <div class="game-title" style="font-size:2.5rem">COUP</div>
+    <div class="about-section">
+      <div class="about-title">🎭 نبذة احترافية عن لعبة Coup</div>
+      <div class="about-text">
+        <strong>Coup</strong> هي لعبة بطاقات استراتيجية تعتمد على الخداع، الإقناع، وإدارة المخاطر، صدرت عام 2012 من تطوير Rikki Tahta ونشر شركة Indie Boards & Cards.
+      </div>
+      <div class="about-text">
+        تدور أحداث اللعبة في عالم ديستوبي خيالي تسيطر عليه طبقة فاسدة من النخبة، حيث يسعى اللاعبون لإسقاط نفوذ خصومهم والسيطرة على السلطة عبر المراوغة السياسية والادعاء بامتلاك شخصيات ذات نفوذ.
+      </div>
+      <div class="about-title" style="font-size:0.95rem;margin-top:1.5rem">🎮 فكرة اللعبة</div>
+      <div class="about-text">
+        كل لاعب يمتلك بطاقتين تمثلان شخصيات سرية ذات قدرات خاصة (مثل Duke، Assassin، Ambassador وغيرها). لا يُشترط أن يقول اللاعب الحقيقة — يمكنه الادعاء بامتلاك أي شخصية للحصول على ميزتها، لكن مع مخاطرة أن يتحداه لاعب آخر ويكشف خداعه.
+      </div>
+      <div class="about-title" style="font-size:0.95rem;margin-top:1.5rem">⚙️ آلية اللعب</div>
+      <ul class="about-list">
+        <li>جمع العملات واستخدامها لتنفيذ الانقلابات</li>
+        <li>ادعاء أدوار للحصول على مزايا تكتيكية</li>
+        <li>تحدي اللاعبين الآخرين لكشف الكذب</li>
+        <li>خسارة النفوذ عند انكشاف الخداع أو التعرض لهجوم</li>
+        <li>آخر لاعب يحتفظ بشخصية واحدة على الأقل يفوز</li>
+      </ul>
+      <div class="about-title" style="font-size:0.95rem;margin-top:1.5rem">👥 عدد اللاعبين</div>
+      <div class="about-text">
+        <strong>2 – 6 لاعبين</strong><br>
+        مدة اللعب: 10 – 20 دقيقة تقريبًا<br>
+        الفئة العمرية: 13+
+      </div>
+      <div class="about-title" style="font-size:0.95rem;margin-top:1.5rem">🧠 ما يميز اللعبة</div>
+      <ul class="about-list">
+        <li>تعتمد على الذكاء الاجتماعي أكثر من الحظ</li>
+        <li>تخلق توترًا نفسيًا وتفاعلاً مباشرًا بين اللاعبين</li>
+        <li>سريعة الإيقاع وسهلة التعلم، لكنها عميقة استراتيجيًا</li>
+      </ul>
+      <div class="divider" style="margin:1.5rem auto"></div>
+      <a href="https://guns.lol/sabrialharbi" target="_blank" class="social-link">
+        🔗 تواصل معي: guns.lol/sabrialharbi
+      </a>
+    </div>
+    <button class="btn-secondary" style="max-width:280px" onclick="showScreen('main-menu')">← العودة</button>
+  </div>
+</div>
+
+<!-- ── SETTINGS ── -->
+<div id="settings-screen" class="screen">
+  <div style="width:100%;max-width:1200px;margin:0 auto">
+    <div class="game-title" style="font-size:2rem;text-align:center;margin-bottom:2rem">⚙️ الإعدادات</div>
+    <div class="settings-box">
+      <div class="settings-title">🔊 التحكم بالصوت</div>
+      <div class="setting-row">
+        <div class="setting-label">مستوى الصوت</div>
+        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="70">
+        <div class="volume-value" id="volume-value">70%</div>
+      </div>
+      <div style="text-align:center;color:var(--text-muted);font-size:0.8rem;margin-top:1rem">
+        (الأصوات قيد التطوير — قريبًا!)
+      </div>
+    </div>
+    <button class="btn-secondary" style="max-width:280px;margin:2rem auto" onclick="showScreen('main-menu')">← العودة</button>
+  </div>
+</div>
+
+<!-- ── LOBBY ── -->
+<div id="lobby" class="screen">
+  <div class="game-title" style="font-size:2.5rem">COUP</div>
+  <div class="divider"></div>
+
+  <div class="lobby-box">
+    <div class="box-title">🎮 إنشاء أو انضمام لغرفة</div>
+    <div class="input-group">
+      <div>
+        <div class="field-label">اسمك</div>
+        <input type="text" id="player-name-input" placeholder="أدخل اسمك..." maxlength="20">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="createRoom()">✨ إنشاء غرفة جديدة</button>
+    <div class="or-divider">أو</div>
+    <div class="input-group">
+      <div>
+        <div class="field-label">كود الغرفة</div>
+        <input type="text" id="room-code-input" placeholder="مثال: XKQM" maxlength="4"
+          style="text-align:center;letter-spacing:0.4em;font-family:'Cinzel Decorative',serif;font-size:1.5rem;text-transform:uppercase">
+      </div>
+    </div>
+    <button class="btn-secondary" onclick="joinRoom()">🚪 انضمام للغرفة</button>
+  </div>
+  <button class="btn-secondary" style="max-width:280px" onclick="showScreen('main-menu')">← العودة</button>
+</div>
+
+<!-- ── WAITING ── -->
+<div id="waiting" class="screen">
+  <div class="room-code-display">
+    <div class="code-label">كود الغرفة</div>
+    <div class="code-value" id="display-code">—</div>
+    <div class="code-hint">شارك هذا الكود مع أصدقائك</div>
+  </div>
+
+  <div class="players-waiting">
+    <div class="waiting-title">⏳ اللاعبون المنضمون</div>
+    <div class="waiting-list" id="waiting-list"></div>
+  </div>
+
+  <div style="width:100%;max-width:440px;display:flex;flex-direction:column;gap:0.6rem">
+    <button class="btn-primary" id="start-btn" onclick="startGame()" style="display:none">⚔️ بدء اللعبة</button>
+    <div id="waiting-hint" class="pulse" style="color:var(--text-muted);font-size:0.85rem;text-align:center">في انتظار اللاعبين...</div>
+    <button class="btn-secondary" onclick="leaveRoom()">← الخروج</button>
+  </div>
+</div>
+
+<!-- ── GAME ── -->
+<div id="game" class="screen">
+  <div id="spectator-banner-slot"></div>
+
+  <div class="top-bar">
+    <div class="top-title">COUP</div>
+    <div class="top-info">دور <span id="top-turn">1</span> · جولة <span id="top-round">1</span></div>
+    <button class="btn-secondary" style="padding:0.4rem 0.75rem;font-size:0.75rem" onclick="showRules()">📜</button>
+  </div>
+
+  <!-- MY HAND -->
+  <div class="my-hand">
+    <div class="hand-label">🃏 بطاقاتك — <span id="my-name-label">أنت</span></div>
+    <div class="hand-cards" id="my-hand-cards"></div>
+  </div>
+
+  <!-- OTHERS -->
+  <div class="others-area" id="others-area"></div>
+
+  <!-- CHAR REF -->
+  <div class="ref-panel">
+    <div class="ref-label">📖 مرجع الشخصيات</div>
+    <div class="ref-row" id="ref-row"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions-panel">
+    <div class="actions-header">
+      <div class="ah-left">
+        <div class="ah-label">دور اللاعب</div>
+        <div class="ah-name" id="ah-name">—</div>
+      </div>
+      <div class="ah-right">
+        <div class="ah-label" style="text-align:left">كوينز</div>
+        <div class="ah-coins" id="ah-coins">—</div>
+      </div>
+    </div>
+    <div id="actions-content"></div>
+    <div class="target-area" id="target-area"></div>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-panel">
+    <div class="log-title">📜 سجل الأحداث</div>
+    <div id="game-log"></div>
+  </div>
+</div>
+
+<!-- ── WINNER ── -->
+<div id="winner" class="screen">
+  <div class="winner-scene">
+    <div class="confetti">🎉</div>
+    <div class="confetti">✨</div>
+    <div class="confetti">🎊</div>
+    <div class="confetti">⭐</div>
+    <div class="confetti">💫</div>
+    <div class="winner-crown">👑</div>
+    <div class="winner-label">الفائز بالانقلاب</div>
+    <div class="winner-name" id="winner-name-display">—</div>
+    <div class="divider"></div>
+  </div>
+  <button class="btn-primary" style="max-width:280px" onclick="leaveRoom()">🔄 لعبة جديدة</button>
+</div>
+
+<script type="module">
+// ══════════════════════════════════════
+//  FIREBASE CONFIG
+// ══════════════════════════════════════
+import { initializeApp }    from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, set, get, onValue, update }
+                            from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJmAzvLyie52MwU0WayqSAocPvpH6c1W4",
+  authDomain: "coup2-c352e.firebaseapp.com",
+  databaseURL: "https://coup2-c352e-default-rtdb.firebaseio.com",
+  projectId: "coup2-c352e",
+  storageBucket: "coup2-c352e.firebasestorage.app",
+  messagingSenderId: "665446559036",
+  appId: "1:665446559036:web:10814bc3a8e81b26c3c239",
+  measurementId: "G-J71S21B92V"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
+
+// ══════════════════════════════════════
+//  GAME DATA
+// ══════════════════════════════════════
+const CHARS = {
+  duke:       { name:'Duke',       icon:'💜', color:'duke',       actions:['جمع 3 كوينز (Tax)','يمنع Foreign Aid'], blocks:['foreign_aid'] },
+  assassin:   { name:'Assassin',   icon:'🗡️', color:'assassin',   actions:['يغتال بـ 3 كوينز'],                    blocks:[] },
+  ambassador: { name:'Ambassador', icon:'🕊️', color:'ambassador', actions:['يستبدل كروته','يمنع Steal'],            blocks:['steal'] },
+  captain:    { name:'Captain',    icon:'⚓', color:'captain',    actions:['يسرق 2 كوينز','يمنع Steal'],           blocks:['steal'] },
+  contessa:   { name:'Contessa',   icon:'🌹', color:'contessa',   actions:['تمنع Assassinate'],                     blocks:['assassinate'] }
+};
+
+const ACTIONS = [
+  { id:'income',      name:'Income',      icon:'💰', desc:'+1 كوين، لا يُعطَّل',               type:'income',           cost:0, gain:1, needsTarget:false, char:null },
+  { id:'foreign_aid', name:'Foreign Aid', icon:'🤝', desc:'+2 كوين، Duke يمنعه',              type:'foreign-aid',      cost:0, gain:2, needsTarget:false, char:null },
+  { id:'coup',        name:'Coup',        icon:'💥', desc:'أجبر لاعبًا على كشف كرت',          type:'coup-action',      cost:7, gain:0, needsTarget:true,  char:null },
+  { id:'tax',         name:'Tax (Duke)',  icon:'💜', desc:'+3 كوينز',                         type:'duke-action',      cost:0, gain:3, needsTarget:false, char:'duke' },
+  { id:'assassinate', name:'Assassinate', icon:'🗡️', desc:'اغتل لاعبًا بـ 3 كوينز',          type:'assassin-action',  cost:3, gain:0, needsTarget:true,  char:'assassin' },
+  { id:'steal',       name:'Steal',       icon:'⚓', desc:'اسرق 2 كوينز من لاعب',            type:'captain-action',   cost:0, gain:0, needsTarget:true,  char:'captain' },
+  { id:'exchange',    name:'Exchange',    icon:'🕊️', desc:'استبدل كروتك من الكومة',          type:'ambassador-action',cost:0, gain:0, needsTarget:false, char:'ambassador' },
+];
+
+// ══════════════════════════════════════
+//  LOCAL STATE
+// ══════════════════════════════════════
+let myId    = null;
+let myName  = '';
+let roomCode= '';
+let isHost  = false;
+let roomRef = null;
+let currentAction = null;
+let volume  = 70;
+
+// ══════════════════════════════════════
+//  PARTICLES
+// ══════════════════════════════════════
+function initParticles() {
+  const container = document.getElementById('particles-container');
+  for (let i = 0; i < 25; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      animation-duration:${6 + Math.random()*10}s;
+      animation-delay:${Math.random()*8}s;
+      --drift:${(Math.random()-0.5)*2};
+      width:${1+Math.random()*3}px;
+      height:${1+Math.random()*3}px;
+      opacity:0;
+    `;
+    container.appendChild(p);
+  }
+}
+initParticles();
+
+// ══════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════
+const volumeSlider = document.getElementById('volume-slider');
+const volumeValue  = document.getElementById('volume-value');
+volumeSlider.addEventListener('input', e => {
+  volume = parseInt(e.target.value);
+  volumeValue.textContent = volume + '%';
+});
+
+// ══════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:4}, ()=>chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+function shuffle(arr) {
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function buildDeck() {
+  const deck = [];
+  Object.keys(CHARS).forEach(c=>{ for(let i=0;i<3;i++) deck.push(c); });
+  return shuffle(deck);
+}
+
+window.showNotif = function(msg, type='gold') {
+  const n = document.createElement('div');
+  n.className = 'notif';
+  if (type === 'red')   n.style.borderColor = 'var(--red)';
+  if (type === 'green') n.style.borderColor = 'var(--green)';
+  n.textContent = msg;
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(), 3000);
+}
+
+window.showScreen = function(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+window.closeModals = function() {
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.remove());
+}
+
+function mkModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.onclick = e => { if(e.target===overlay) window.closeModals(); };
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  overlay.appendChild(modal);
+  return modal;
+}
+
+// ── تأثير العملات الطائرة ──
+function spawnCoinEffect(x, y, amount, positive=true) {
+  const el = document.createElement('div');
+  el.className = 'coin-float';
+  el.textContent = (positive ? '+' : '-') + amount + ' 💰';
+  el.style.cssText = `left:${x}px; top:${y}px; color:${positive?'var(--gold)':'var(--red)'}`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1300);
+}
+
+// ── تأثير الجمجمة ──
+function spawnSkullEffect(x, y) {
+  const el = document.createElement('div');
+  el.className = 'skull-float';
+  el.textContent = '💀';
+  el.style.cssText = `left:${x}px; top:${y}px;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 1600);
+}
+
+// ── وميض الإقصاء ──
+function flashEliminate() {
+  document.body.classList.add('eliminate-flash');
+  setTimeout(()=>document.body.classList.remove('eliminate-flash'), 1200);
+}
+
+// ══════════════════════════════════════
+//  LOBBY
+// ══════════════════════════════════════
+window.createRoom = async function() {
+  let name = document.getElementById('player-name-input').value.trim() || 'لاعب1';
+  myName = name; isHost = true; myId = 0;
+  roomCode = genCode();
+
+  const room = {
+    code: roomCode, host: 0, status: 'waiting',
+    players: [{ id:0, name, coins:2, cards:[], cardRevealed:[false,false], eliminated:false }],
+    deck:[], currentPlayer:0, turn:1, round:1, log:[],
+    pendingBlock:null, pendingReveal:null
+  };
+
+  roomRef = ref(db, `rooms/${roomCode}`);
+  await set(roomRef, room);
+
+  document.getElementById('display-code').textContent = roomCode;
+  showScreen('waiting');
+  listenRoom();
+}
+
+window.joinRoom = async function() {
+  let name = document.getElementById('player-name-input').value.trim() || 'لاعب';
+  const code = document.getElementById('room-code-input').value.trim().toUpperCase();
+  if (!code || code.length!==4) { showNotif('أدخل كود الغرفة (4 أحرف)'); return; }
+
+  myName = name; roomCode = code; isHost = false;
+  roomRef = ref(db, `rooms/${roomCode}`);
+
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists())         { showNotif('الغرفة غير موجودة!','red');   return; }
+  const room = snapshot.val();
+  if (room.status !== 'waiting')  { showNotif('اللعبة بدأت بالفعل!','red'); return; }
+  if (room.players.length >= 6)   { showNotif('الغرفة ممتلئة!','red');       return; }
+
+  const existing = room.players.find(p=>p.name===name);
+  if (existing) { myId = existing.id; }
+  else {
+    myId = room.players.length;
+    room.players.push({ id:myId, name, coins:2, cards:[], cardRevealed:[false,false], eliminated:false });
+    await set(roomRef, room);
+  }
+
+  document.getElementById('display-code').textContent = roomCode;
+  showScreen('waiting');
+  listenRoom();
+}
+
+function listenRoom() {
+  onValue(roomRef, snapshot => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    if (data.status === 'waiting') {
+      renderWaiting(data);
+    } else if (data.status === 'playing') {
+      renderGame(data);
+      if (document.getElementById('waiting').classList.contains('active')) {
+        showScreen('game');
+        buildRefCards();
+      }
+    } else if (data.status === 'finished') {
+      document.getElementById('winner-name-display').textContent = data.winner || '?';
+      showScreen('winner');
+    }
+
+    checkPendingActions(data);
+  });
+}
+
+window.startGame = async function() {
+  if (!isHost) return;
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+  if (room.players.length < 2) { showNotif('تحتاج لاعبين على الأقل!'); return; }
+
+  room.deck = buildDeck();
+  room.players.forEach(p => {
+    p.cards        = [room.deck.pop(), room.deck.pop()];
+    p.cardRevealed = [false,false];
+    p.coins        = 2;
+    p.eliminated   = false;
+  });
+  room.currentPlayer = 0; room.turn = 1; room.round = 1;
+  room.log = [`⚔️ بدأت اللعبة! ${room.players.length} لاعبين.`];
+  room.status = 'playing';
+  await set(roomRef, room);
+}
+
+window.leaveRoom = async function() {
+  roomCode=''; myId=null; myName=''; isHost=false; roomRef=null;
+  showScreen('main-menu');
+}
+
+// ══════════════════════════════════════
+//  WAITING RENDER
+// ══════════════════════════════════════
+function renderWaiting(room) {
+  const list = document.getElementById('waiting-list');
+  list.innerHTML = room.players.map((p,i)=>`
+    <div class="waiting-player">
+      <div class="waiting-dot"></div>
+      <div class="waiting-name">${p.name}</div>
+      ${i===0?'<div class="waiting-host">Host</div>':''}
+    </div>`).join('');
+
+  const startBtn = document.getElementById('start-btn');
+  const hint     = document.getElementById('waiting-hint');
+  if (isHost && room.players.length >= 2) {
+    startBtn.style.display='block'; hint.style.display='none';
+  } else if (isHost) {
+    startBtn.style.display='none';
+    hint.textContent='في انتظار لاعب آخر على الأقل...'; hint.style.display='block';
+  } else {
+    startBtn.style.display='none';
+    hint.textContent=`في انتظار ${room.players[0].name} لبدء اللعبة...`; hint.style.display='block';
+  }
+}
+
+// ══════════════════════════════════════
+//  GAME RENDER
+// ══════════════════════════════════════
+function renderGame(room) {
+  const me = room.players[myId];
+  if (!me) return;
+
+  // ── هل أنا مشاهد (تمت إزالتي)؟ ──
+  const amSpectator = me.eliminated;
+
+  // شريط المشاهد
+  const bannerSlot = document.getElementById('spectator-banner-slot');
+  if (amSpectator) {
+    bannerSlot.innerHTML = `
+      <div class="spectator-banner">
+        <span class="spectator-icon">👁️</span>
+        <div>
+          <div class="spectator-text">أنت الآن مشاهد فقط</div>
+          <div class="spectator-sub">لقد خرجت من اللعبة — استمتع بالمشاهدة!</div>
+        </div>
+      </div>`;
+  } else {
+    bannerSlot.innerHTML = '';
+  }
+
+  document.getElementById('top-turn').textContent  = room.turn;
+  document.getElementById('top-round').textContent = room.round;
+  document.getElementById('my-name-label').textContent = me.name + (amSpectator ? ' 👁️' : '');
+
+  const handEl = document.getElementById('my-hand-cards');
+  handEl.innerHTML = me.cards.map((c,i) => {
+    const ch  = CHARS[c];
+    const rev = me.cardRevealed[i];
+    return `<div class="hand-card ${ch.color} ${rev?'revealed':''}">
+      <div class="hc-icon">${ch.icon}</div>
+      <div class="hc-name">${ch.name}</div>
+      ${rev?'<span style="font-size:0.6rem;opacity:0.6">مكشوف</span>':''}
+    </div>`;
+  }).join('');
+
+  const othersEl = document.getElementById('others-area');
+  othersEl.innerHTML = room.players.filter(p=>p.id!==myId).map(p=>{
+    const isCurrent = p.id===room.currentPlayer;
+    return `<div class="opp-card ${isCurrent?'active-turn':''} ${p.eliminated?'eliminated':''}">
+      <div class="opp-header">
+        <div class="opp-name">${isCurrent?'▶ ':''}${p.name}</div>
+        <div class="opp-coins">💰 ${p.coins}</div>
+      </div>
+      <div class="opp-cards-row">
+        ${p.cards.map((c,i)=>{
+          const rev = p.cardRevealed[i];
+          if (rev) {
+            const ch = CHARS[c];
+            return `<div class="mini-card ${ch.color}" style="position:relative">
+              <div class="dead-badge">✕</div>
+              <div class="mc-icon">${ch.icon}</div>
+              <div style="font-size:0.5rem">${ch.name}</div>
+            </div>`;
+          }
+          return `<div class="mini-card face-down"></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  const curP = room.players[room.currentPlayer];
+  document.getElementById('ah-name').textContent  = curP.name;
+  document.getElementById('ah-coins').textContent = `💰 ${curP.coins}`;
+
+  const actEl   = document.getElementById('actions-content');
+  const isMyTurn = room.currentPlayer===myId && !me.eliminated;
+
+  if (amSpectator) {
+    // مشاهد فقط — لا أفعال
+    actEl.innerHTML = `
+      <div class="spectator-view">
+        <div class="sv-icon">👁️</div>
+        <div class="sv-text">وضع المشاهد</div>
+        <div class="sv-sub">تابع اللعبة ولا يمكنك التصرف</div>
+      </div>`;
+    document.getElementById('target-area').innerHTML = '';
+  } else if (isMyTurn) {
+    actEl.innerHTML = renderActionsGrid(me, room);
+  } else {
+    actEl.innerHTML = `<div class="waiting-turn">⏳ دور <span class="wt-name">${curP.name}</span>...</div>`;
+    document.getElementById('target-area').innerHTML = '';
+  }
+
+  const logEl = document.getElementById('game-log');
+  logEl.innerHTML = [...room.log].reverse().slice(0,30).map((msg,i)=>`
+    <div class="log-entry">
+      <div class="log-t">${Math.max(1,room.turn-i)}</div>
+      <div class="log-m">${msg}</div>
+    </div>`).join('');
+}
+
+function renderActionsGrid(me, room) {
+  return `<div class="actions-grid">` +
+    ACTIONS.map(a=>{
+      const mustCoup = me.coins>=10 && a.id!=='coup';
+      const cantCoup = a.id==='coup' && me.coins<7;
+      const cantAss  = a.id==='assassinate' && me.coins<3;
+      const disabled = mustCoup||cantCoup||cantAss;
+      const required = a.id==='coup' && me.coins>=10;
+
+      let costHtml = '';
+      if (a.cost>0) costHtml=`<div class="ab-cost">💰 ${a.cost}</div>`;
+      if (a.gain>0) costHtml=`<div class="ab-cost gain">+${a.gain} 💰</div>`;
+
+      return `<button class="action-btn ${a.type} ${required?'required':''}"
+        ${disabled?'disabled':''} onclick="window.handleAction('${a.id}')">
+        <div class="ab-top"><div class="ab-name">${a.name}</div><div class="ab-icon">${a.icon}</div></div>
+        ${costHtml}
+        <div class="ab-desc">${a.desc}</div>
+      </button>`;
+    }).join('') + `</div>`;
+}
+
+// ══════════════════════════════════════
+//  ACTIONS
+// ══════════════════════════════════════
+window.handleAction = async function(actionId) {
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+
+  // منع المُقصَى من التصرف
+  const me = room.players[myId];
+  if (me.eliminated) return;
+  if (room.currentPlayer !== myId) return;
+
+  const action = ACTIONS.find(a=>a.id===actionId);
+  if (!action) return;
+
+  if (action.needsTarget) {
+    currentAction = action;
+    showTargetPicker(action, room);
+    return;
+  }
+  await submitAction(action, null);
+}
+
+function showTargetPicker(action, room) {
+  const area    = document.getElementById('target-area');
+  const targets = room.players.filter(p=>p.id!==myId && !p.eliminated);
+  area.innerHTML = `<div class="target-box">
+    <div class="target-label">🎯 اختر هدفك:</div>
+    <div class="target-btns">
+      ${targets.map(t=>`<button class="target-btn" onclick="window.selectTarget(${t.id})">${t.name} (💰${t.coins})</button>`).join('')}
+    </div>
+  </div>`;
+}
+
+window.selectTarget = async function(targetId) {
+  if (!currentAction) return;
+  await submitAction(currentAction, targetId);
+  currentAction = null;
+}
+
+window.submitAction = async function(action, targetId) {
+  document.getElementById('target-area').innerHTML = '';
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+
+  const me     = room.players[myId];
+  const target = targetId!==null ? room.players[targetId] : null;
+
+  const blockable = ['foreign_aid','tax','assassinate','steal','exchange'];
+  if (blockable.includes(action.id)) {
+    room.pendingBlock = {
+      actionId: action.id, actorId: myId, targetId,
+      timestamp: Date.now(), blocked:false, challenged:false, blockerChar:null
+    };
+    room.log.unshift(`⚡ <span class="hl">${me.name}</span> يحاول: <span class="hl">${action.name}</span>${target?' على '+target.name:''} — هل يعترض أحد؟`);
+    await set(roomRef, room);
+
+    setTimeout(async ()=>{
+      const s2 = await get(roomRef);
+      if (!s2.exists()) return;
+      await resolveAction(s2.val(), action, targetId);
+    }, 10000);
+    return;
+  }
+
+  await applyAction(room, action, me, target);
+}
+
+async function resolveAction(room, action, targetId) {
+  const pb = room.pendingBlock;
+  if (!pb || pb.actionId!==action.id) return;
+
+  const me     = room.players[pb.actorId];
+  const target = pb.targetId!==null ? room.players[pb.targetId] : null;
+
+  if (pb.blocked) {
+    const bch = CHARS[pb.blockerChar];
+    room.log.unshift(`🛡️ تم تعطيل <span class="hl">${action.name}</span> بـ ${bch.icon} ${bch.name}!`);
+    if (action.id==='assassinate') me.coins+=3;
+    room.pendingBlock = null;
+    await advanceTurn(room);
+    return;
+  }
+
+  if (pb.challenged) {
+    const hasCard = action.char && me.cards.some((c,i)=>c===action.char && !me.cardRevealed[i]);
+    if (!hasCard && action.char) {
+      room.log.unshift(`❓ التشكيك نجح! ${me.name} لا يملك البطاقة المزعومة.`);
+      const idx = me.cards.findIndex((_,i)=>!me.cardRevealed[i]);
+      if (idx>=0) me.cardRevealed[idx]=true;
+      checkElimination(room, me);
+      if (action.id==='assassinate') me.coins+=3;
+      room.pendingBlock=null;
+      await advanceTurn(room);
+      return;
+    } else {
+      room.log.unshift(`❓ التشكيك فشل! ${me.name} أثبت ادعاءه.`);
+      const challenger = pb.challengerId!==undefined ? room.players[pb.challengerId] : null;
+      if (challenger) {
+        const idx = challenger.cards.findIndex((_,i)=>!challenger.cardRevealed[i]);
+        if (idx>=0) challenger.cardRevealed[idx]=true;
+        checkElimination(room, challenger);
+      }
+    }
+  }
+
+  room.pendingBlock=null;
+  await applyAction(room, action, me, target);
+}
+
+async function applyAction(room, action, me, target) {
+  switch(action.id) {
+    case 'income':
+      me.coins+=1;
+      room.log.unshift(`💰 <span class="hl">${me.name}</span> جمع Income (+1). الإجمالي: <span class="coin-c">${me.coins}</span>`);
+      spawnCoinEffect(window.innerWidth/2, window.innerHeight/2, 1);
+      break;
+    case 'foreign_aid':
+      me.coins+=2;
+      room.log.unshift(`🤝 <span class="hl">${me.name}</span> حصل على Foreign Aid (+2). الإجمالي: <span class="coin-c">${me.coins}</span>`);
+      spawnCoinEffect(window.innerWidth/2, window.innerHeight/2, 2);
+      break;
+    case 'coup':
+      if (me.coins<7) return;
+      me.coins-=7;
+      room.log.unshift(`💥 <span class="hl">${me.name}</span> نفذ Coup على <span class="danger-c">${target.name}</span>!`);
+      room.pendingReveal = { targetId: target.id };
+      await set(roomRef, room);
+      return;
+    case 'tax':
+      me.coins+=3;
+      room.log.unshift(`💜 <span class="hl">${me.name}</span> جمع Tax (Duke +3). الإجمالي: <span class="coin-c">${me.coins}</span>`);
+      spawnCoinEffect(window.innerWidth/2, window.innerHeight/2, 3);
+      break;
+    case 'assassinate':
+      if (me.coins<3) return;
+      me.coins-=3;
+      room.log.unshift(`🗡️ <span class="hl">${me.name}</span> اغتال <span class="danger-c">${target.name}</span>!`);
+      room.pendingReveal = { targetId: target.id };
+      await set(roomRef, room);
+      return;
+    case 'steal': {
+      const stolen = Math.min(2, target.coins);
+      target.coins-=stolen; me.coins+=stolen;
+      room.log.unshift(`⚓ <span class="hl">${me.name}</span> سرق <span class="coin-c">${stolen}</span> كوينز من <span class="danger-c">${target.name}</span>!`);
+      spawnCoinEffect(window.innerWidth/2, window.innerHeight/2, stolen);
+      break;
+    }
+    case 'exchange': {
+      const drawn=[];
+      if (room.deck.length>0) drawn.push(room.deck.pop());
+      if (room.deck.length>0) drawn.push(room.deck.pop());
+      const live = me.cards.filter((_,i)=>!me.cardRevealed[i]);
+      const pool = [...live,...drawn];
+      const kept = pool.slice(0,live.length);
+      pool.slice(live.length).forEach(c=>room.deck.unshift(c));
+      room.deck = shuffle(room.deck);
+      let ki=0;
+      me.cards = me.cards.map((c,i)=>me.cardRevealed[i]?c:kept[ki++]);
+      room.log.unshift(`🕊️ <span class="hl">${me.name}</span> استبدل كروته (Ambassador).`);
+      break;
+    }
+  }
+  await advanceTurn(room);
+}
+
+async function advanceTurn(room) {
+  const winner = checkWinner(room);
+  if (winner) {
+    room.status='finished'; room.winner=winner.name;
+    await set(roomRef, room); return;
+  }
+  let next=( room.currentPlayer+1)%room.players.length, tries=0;
+  while(room.players[next].eliminated && tries<room.players.length){
+    next=(next+1)%room.players.length; tries++;
+  }
+  if (next<=room.currentPlayer) room.round++;
+  room.currentPlayer=next; room.turn++;
+  await set(roomRef, room);
+}
+
+function checkElimination(room, player) {
+  if (player.cardRevealed.every(r=>r)) {
+    player.eliminated=true;
+    room.log.unshift(`💀 <span class="danger-c">${player.name}</span> تم القضاء عليه!`);
+    // تأثير الجمجمة إذا كنت هو المُقصَى
+    if (player.id===myId) {
+      flashEliminate();
+      spawnSkullEffect(window.innerWidth/2, window.innerHeight/3);
+      showNotif('💀 تم إقصاؤك! ستنتقل الآن لوضع المشاهد','red');
+    }
+  }
+}
+
+function checkWinner(room) {
+  const alive = room.players.filter(p=>!p.eliminated);
+  return alive.length===1 ? alive[0] : null;
+}
+
+// ══════════════════════════════════════
+//  PENDING ACTIONS
+// ══════════════════════════════════════
+let shownBlockTs  = 0;
+let shownRevealTs = 0;
+
+function checkPendingActions(room) {
+  if (room.status!=='playing') return;
+
+  if (room.pendingReveal && room.pendingReveal.targetId===myId) {
+    if (shownRevealTs !== room.pendingReveal.targetId) {
+      shownRevealTs = room.pendingReveal.targetId;
+      showRevealModal(room);
+    }
+  }
+
+  const pb = room.pendingBlock;
+  if (pb && pb.actorId!==myId && !pb.blocked && !pb.challenged) {
+    if (Date.now()-pb.timestamp < 10000) {
+      if (shownBlockTs !== pb.timestamp) {
+        shownBlockTs = pb.timestamp;
+        const action = ACTIONS.find(a=>a.id===pb.actionId);
+        const actor  = room.players[pb.actorId];
+        const target = pb.targetId!==null ? room.players[pb.targetId] : null;
+        const isTarget = target && target.id===myId;
+        // مشاهدون لا يعترضون
+        const me = room.players[myId];
+        if (!me.eliminated) showBlockWindow(pb, action, actor, target, isTarget);
+      }
+    }
+  }
+}
+
+function showBlockWindow(pb, action, actor, target, isTarget) {
+  const modal    = mkModal();
+  const blockers = getBlockers(pb.actionId);
+
+  let blockBtns = '';
+  if (isTarget && blockers.length>0) {
+    blockBtns = blockers.map(b=>`
+      <button class="mbtn danger" onclick="window.doBlock('${b.char}')">
+        <span class="mi">${CHARS[b.char].icon}</span>
+        <div class="mt"><div class="mn">Block with ${CHARS[b.char].name}</div>
+        <div class="md">تعطيل الإجراء</div></div>
+      </button>`).join('');
+  }
+  if (pb.actionId==='assassinate' && isTarget) {
+    blockBtns += `<button class="mbtn danger" onclick="window.doBlock('contessa')">
+      <span class="mi">🌹</span>
+      <div class="mt"><div class="mn">Block with Contessa</div><div class="md">أمنع الاغتيال</div></div>
+    </button>`;
+  }
+
+  modal.innerHTML = `
+    <div class="modal-title">⚡ ${actor.name} يحاول ${action.name}!</div>
+    <div class="modal-sub">${target?'الهدف: '+target.name:''} — لديك 10 ثوانٍ</div>
+    <div class="modal-btns">
+      <button class="mbtn confirm" onclick="window.closeModals()">
+        <span class="mi">✅</span>
+        <div class="mt"><div class="mn">لا اعتراض</div><div class="md">السماح بالإجراء</div></div>
+      </button>
+      ${blockBtns}
+      <button class="mbtn danger" onclick="window.doChallenge()">
+        <span class="mi">❓</span>
+        <div class="mt"><div class="mn">تشكيك!</div><div class="md">أشك في ادعائه</div></div>
+      </button>
+    </div>
+    <div class="timer-bar"></div>`;
+  document.body.appendChild(modal.parentElement);
+}
+
+window.doBlock = async function(charKey) {
+  closeModals();
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+  if (!room.pendingBlock) return;
+  room.pendingBlock.blocked    = true;
+  room.pendingBlock.blockerChar= charKey;
+  await set(roomRef, room);
+}
+
+window.doChallenge = async function() {
+  closeModals();
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+  if (!room.pendingBlock) return;
+  room.pendingBlock.challenged   = true;
+  room.pendingBlock.challengerId = myId;
+  await set(roomRef, room);
+}
+
+function getBlockers(actionId) {
+  if (actionId==='foreign_aid') return [{char:'duke'}];
+  if (actionId==='steal')       return [{char:'ambassador'},{char:'captain'}];
+  return [];
+}
+
+function showRevealModal(room) {
+  const me     = room.players[myId];
+  const idxArr = me.cardRevealed.map((r,i)=>r?-1:i).filter(i=>i>=0);
+  if (idxArr.length===0) return;
+
+  const modal = mkModal();
+  modal.innerHTML = `
+    <div class="modal-title">💀 عليك كشف بطاقة!</div>
+    <div class="modal-sub">اختر البطاقة التي ستكشفها</div>
+    <div class="modal-btns">
+      ${idxArr.map(i=>{
+        const ch = CHARS[me.cards[i]];
+        return `<button class="mbtn danger" onclick="window.revealMyCard(${i})">
+          <span class="mi">${ch.icon}</span>
+          <div class="mt"><div class="mn">${ch.name}</div><div class="md">كشف هذه البطاقة</div></div>
+        </button>`;
+      }).join('')}
+    </div>`;
+  document.body.appendChild(modal.parentElement);
+}
+
+window.revealMyCard = async function(cardIdx) {
+  closeModals();
+  const snapshot = await get(roomRef);
+  if (!snapshot.exists()) return;
+  const room = snapshot.val();
+  const me   = room.players[myId];
+  me.cardRevealed[cardIdx]=true;
+  const ch = CHARS[me.cards[cardIdx]];
+  room.log.unshift(`☠️ <span class="danger-c">${me.name}</span> فقد ${ch.icon} ${ch.name}!`);
+  checkElimination(room, me);
+  room.pendingReveal=null;
+
+  // تأثير كشف البطاقة
+  spawnSkullEffect(window.innerWidth/2, window.innerHeight/3);
+
+  await advanceTurn(room);
+}
+
+// ══════════════════════════════════════
+//  REF CARDS
+// ══════════════════════════════════════
+function buildRefCards() {
+  const row = document.getElementById('ref-row');
+  if (!row||row.innerHTML) return;
+  row.innerHTML = Object.entries(CHARS).map(([k,c])=>
+    `<div class="ref-chip ${c.color}" onclick="window.showCharInfo('${k}')">
+      <div class="rc-icon">${c.icon}</div>
+      <div class="rc-name">${c.name}</div>
+      <div class="rc-power">${c.actions[0]}</div>
+    </div>`).join('');
+}
+
+window.showCharInfo = function(k) {
+  const c = CHARS[k];
+  const modal = mkModal();
+  modal.innerHTML = `
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-size:3rem">${c.icon}</div>
+      <div class="modal-title">${c.name}</div>
+    </div>
+    <div style="background:var(--bg-surface);border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:0.83rem">
+      <div style="color:var(--gold);font-weight:700;margin-bottom:0.4rem">⚡ القدرات:</div>
+      ${c.actions.map(a=>`<div style="color:var(--text-muted);margin-bottom:0.2rem">• ${a}</div>`).join('')}
+      ${c.blocks.length?`<div style="color:var(--gold);font-weight:700;margin:0.4rem 0">🛡️ يحجب:</div>${c.blocks.map(b=>`<div style="color:var(--text-muted)">• ${ACTIONS.find(a=>a.id===b)?.name||b}</div>`).join('')}`:''}
+    </div>
+    <button class="mbtn" onclick="window.closeModals()" style="width:100%;justify-content:center">إغلاق</button>`;
+  document.body.appendChild(modal.parentElement);
+}
+
+window.showRules = function() {
+  const modal = mkModal();
+  modal.innerHTML = `
+    <div class="modal-title">📜 قواعد Coup</div>
+    <div style="font-size:0.8rem;color:var(--text-muted);line-height:1.8;max-height:60vh;overflow-y:auto;margin-bottom:1rem">
+      <b style="color:var(--gold-light)">🎯 الهدف:</b> كن آخر لاعب يملك بطاقة حية.<br><br>
+      <b style="color:var(--gold-light)">🃏 البداية:</b> كل لاعب يبدأ بـ 2 بطاقات و 2 كوينز سرية.<br><br>
+      <b style="color:var(--gold-light)">⚡ الإجراءات:</b><br>
+      • Income: +1 كوين. لا يُعطَّل.<br>
+      • Foreign Aid: +2، Duke يمنعه.<br>
+      • Coup: 7 كوينز، لا يُعطَّل.<br>
+      • Tax (Duke): +3 كوين.<br>
+      • Assassinate: 3 كوينز، Contessa تمنعه.<br>
+      • Steal (Captain): اسرق 2، Ambassador/Captain يمنعانه.<br>
+      • Exchange (Ambassador): استبدل كروتك.<br><br>
+      <b style="color:var(--gold-light)">❓ التشكيك والحجب:</b><br>
+      عند إجراء قابل للحجب، اللاعبون الآخرون لديهم 10 ثوانٍ للاعتراض.<br><br>
+      <b style="color:var(--gold-light)">👁️ المشاهد:</b><br>
+      عند خسارة كل بطاقاتك تنتقل لوضع المشاهد ولا يمكنك التصرف.<br><br>
+      <b style="color:var(--gold-light)">⚠️ 10 كوينز:</b> يجب تنفيذ Coup.
+    </div>
+    <button class="mbtn" onclick="window.closeModals()" style="width:100%;justify-content:center">فهمت 👍</button>`;
+  document.body.appendChild(modal.parentElement);
+}
+</script>
+</body>
+</html>
